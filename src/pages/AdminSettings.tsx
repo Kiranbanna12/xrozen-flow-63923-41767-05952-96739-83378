@@ -1,0 +1,197 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiClient } from "@/lib/api-client";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { Settings, CreditCard, ToggleLeft } from "lucide-react";
+import { toast } from "sonner";
+import { isAdminEmail } from "@/lib/adminAuth";
+import { AdminLayout } from "@/layouts/AdminLayout";
+
+export default function AdminSettings() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [appMode, setAppMode] = useState("free");
+  const [razorpayKeyId, setRazorpayKeyId] = useState("");
+  const [razorpayKeySecret, setRazorpayKeySecret] = useState("");
+
+  useEffect(() => {
+    checkAdminAndLoad();
+  }, []);
+
+  const checkAdminAndLoad = async () => {
+    try {
+      const user = await apiClient.getCurrentUser();
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+
+      // Check if user email is in local admin list
+      if (!isAdminEmail(user.email)) {
+        toast.error("Access denied. Admin only.");
+        navigate("/dashboard");
+        return;
+      }
+
+      loadSettings();
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      navigate("/auth");
+    }
+  };
+
+  const loadSettings = async () => {
+    try {
+      // For now, use mock data since app_settings table doesn't exist yet
+      // TODO: Implement app_settings table and API endpoints
+      setAppMode("free");
+      setRazorpayKeyId("");
+      setRazorpayKeySecret("");
+      
+      toast.info("Settings loaded (using default values)");
+    } catch (error) {
+      console.error("Error loading settings:", error);
+      toast.error("Failed to load settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleAppMode = async () => {
+    try {
+      const newMode = appMode === "free" ? "paid" : "free";
+      
+      // TODO: Implement app_settings API endpoint
+      setAppMode(newMode);
+      toast.success(`App mode changed to ${newMode} (mock update)`);
+    } catch (error) {
+      console.error("Error updating app mode:", error);
+      toast.error("Failed to update app mode");
+    }
+  };
+
+  const saveRazorpayConfig = async () => {
+    try {
+      // TODO: Implement app_settings API endpoint
+      toast.success("Razorpay configuration saved (mock update)");
+    } catch (error) {
+      console.error("Error saving Razorpay config:", error);
+      toast.error("Failed to save Razorpay configuration");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <AdminLayout title="Admin Settings" description="Configure app-wide settings">
+      <div className="max-w-4xl space-y-6">
+            {/* App Mode Toggle */}
+            <Card className="shadow-elegant">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <ToggleLeft className="h-5 w-5" />
+                      App Mode
+                    </CardTitle>
+                    <CardDescription>
+                      Switch between free and paid subscription enforcement
+                    </CardDescription>
+                  </div>
+                  <Badge className={appMode === "free" ? "bg-success" : "bg-primary"}>
+                    {appMode === "free" ? "Free Mode" : "Paid Mode"}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                  <div>
+                    <p className="font-medium">Current Mode: {appMode.toUpperCase()}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {appMode === "free" 
+                        ? "No payment required, full access for testing"
+                        : "Subscription required, payment enforcement active"}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={appMode === "paid"}
+                    onCheckedChange={toggleAppMode}
+                  />
+                </div>
+
+                <div className="text-sm text-muted-foreground">
+                  <p className="font-semibold mb-2">Mode Details:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>Free Mode:</strong> Users can select any plan without payment. Perfect for testing and development.</li>
+                    <li><strong>Paid Mode:</strong> Users must complete payment via Razorpay to activate subscriptions.</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Razorpay Configuration */}
+            <Card className="shadow-elegant">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5" />
+                  Razorpay Configuration
+                </CardTitle>
+                <CardDescription>
+                  Configure Razorpay payment gateway
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="razorpay-key-id">Razorpay Key ID</Label>
+                  <Input
+                    id="razorpay-key-id"
+                    value={razorpayKeyId}
+                    onChange={(e) => setRazorpayKeyId(e.target.value)}
+                    placeholder="rzp_test_..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="razorpay-key-secret">Razorpay Key Secret</Label>
+                  <Input
+                    id="razorpay-key-secret"
+                    type="password"
+                    value={razorpayKeySecret}
+                    onChange={(e) => setRazorpayKeySecret(e.target.value)}
+                    placeholder="Enter secret key"
+                  />
+                </div>
+
+                <Button 
+                  className="gradient-primary w-full"
+                  onClick={saveRazorpayConfig}
+                >
+                  Save Razorpay Configuration
+                </Button>
+
+                <div className="text-sm text-muted-foreground p-3 bg-muted rounded-lg">
+                  <p className="font-semibold mb-1">How to get Razorpay keys:</p>
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>Sign up at razorpay.com</li>
+                    <li>Go to Settings → API Keys</li>
+                    <li>Generate keys for Test/Live mode</li>
+                    <li>Copy and paste here</li>
+                  </ol>
+                </div>
+              </CardContent>
+            </Card>
+      </div>
+    </AdminLayout>
+  );
+}

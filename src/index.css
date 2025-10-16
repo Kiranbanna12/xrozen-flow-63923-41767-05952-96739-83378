@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* WhatsApp Green Theme */
+    --primary: 142 76% 46%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 142 76% 56%;
+    
+    /* Modern Gray */
+    --secondary: 215 16% 47%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 142 76% 46%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Success Green */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    /* Warning Orange */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 142 76% 46%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar - Light Mode */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 142 76% 46%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 142 76% 46%;
+
+    /* Gradients - Green Theme */
+    --gradient-primary: linear-gradient(135deg, hsl(142 76% 46%), hsl(142 76% 56%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 46%));
+    --gradient-hero: linear-gradient(135deg, hsl(142 76% 46%) 0%, hsl(142 76% 36%) 100%);
+    
+    /* Shadows - Black Theme */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-elegant: 0 10px 30px -10px rgb(0 0 0 / 0.15);
+    --shadow-glow: 0 4px 20px rgb(0 0 0 / 0.1);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .dark {
+    /* Pure Black/Grey Dark Theme - No Blue Tones */
+    --background: 0 0% 7%;          /* Almost black background */
+    --foreground: 0 0% 98%;         /* White text */
+
+    --card: 0 0% 10%;               /* Very dark grey cards */
+    --card-foreground: 0 0% 98%;    /* White text on cards */
+
+    --popover: 0 0% 10%;            /* Dark grey popover */
+    --popover-foreground: 0 0% 98%; /* White text in popover */
+
+    --primary: 142 76% 46%;         /* Keep green primary */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 142 76% 56%;
+
+    --secondary: 0 0% 20%;          /* Dark grey secondary */
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 15%;              /* Muted dark grey */
+    --muted-foreground: 0 0% 65%;   /* Grey text */
+
+    --accent: 142 76% 46%;          /* Keep green accent */
+    --accent-foreground: 0 0% 100%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 20%;             /* Dark grey border */
+    --input: 0 0% 15%;              /* Dark input background */
+    --ring: 142 76% 46%;            /* Keep green ring */
+
+    /* Sidebar - Dark Mode (Pure Black/Grey) */
+    --sidebar-background: 0 0% 10%;        /* Very dark grey sidebar */
+    --sidebar-foreground: 0 0% 98%;        /* White text */
+    --sidebar-primary: 142 76% 46%;        /* Green for active items */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 15%;            /* Dark grey hover/active state */
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 20%;            /* Dark border */
+    --sidebar-ring: 142 76% 46%;           /* Green focus ring */
+
+    --gradient-primary: linear-gradient(135deg, hsl(142 76% 46%), hsl(142 76% 36%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 46%));
+    --gradient-hero: linear-gradient(135deg, hsl(142 76% 46%) 0%, hsl(142 76% 36%) 100%);
+    
+    --shadow-elegant: 0 10px 30px -10px rgb(0 0 0 / 0.4);
+    --shadow-glow: 0 4px 20px rgb(0 0 0 / 0.3);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased text-xs sm:text-sm;
+  }
+
+  h1 {
+    @apply font-semibold tracking-tight text-lg sm:text-xl lg:text-2xl;
+  }
+
+  h2 {
+    @apply font-semibold tracking-tight text-base sm:text-lg lg:text-xl;
+  }
+
+  h3 {
+    @apply font-semibold tracking-tight text-sm sm:text-base;
+  }
+
+  h4, h5, h6 {
+    @apply font-semibold tracking-tight text-xs sm:text-sm;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-success {
+    background: var(--gradient-success);
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+}
