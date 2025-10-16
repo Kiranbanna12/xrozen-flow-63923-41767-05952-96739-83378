@@ -16,148 +16,65 @@ export type Database = {
     Tables: {
       clients: {
         Row: {
-          address: string | null
           company: string | null
-          created_at: string
+          created_at: string | null
           email: string
-          employment_type: Database["public"]["Enums"]["employment_type"] | null
+          employment_type: Database["public"]["Enums"]["employment_type"]
+          full_name: string
           id: string
-          name: string
-          phone: string | null
-          updated_at: string
+          monthly_rate: number | null
+          project_rate: number | null
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
-          address?: string | null
           company?: string | null
-          created_at?: string
+          created_at?: string | null
           email: string
-          employment_type?:
-            | Database["public"]["Enums"]["employment_type"]
-            | null
+          employment_type?: Database["public"]["Enums"]["employment_type"]
+          full_name: string
           id?: string
-          name: string
-          phone?: string | null
-          updated_at?: string
+          monthly_rate?: number | null
+          project_rate?: number | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
-          address?: string | null
           company?: string | null
-          created_at?: string
+          created_at?: string | null
           email?: string
-          employment_type?:
-            | Database["public"]["Enums"]["employment_type"]
-            | null
+          employment_type?: Database["public"]["Enums"]["employment_type"]
+          full_name?: string
           id?: string
-          name?: string
-          phone?: string | null
-          updated_at?: string
+          monthly_rate?: number | null
+          project_rate?: number | null
+          updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "clients_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      conversation_members: {
-        Row: {
-          conversation_id: string
-          id: string
-          joined_at: string
-          user_id: string
-        }
-        Insert: {
-          conversation_id: string
-          id?: string
-          joined_at?: string
-          user_id: string
-        }
-        Update: {
-          conversation_id?: string
-          id?: string
-          joined_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "conversation_members_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "conversations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "conversation_members_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      conversations: {
-        Row: {
-          created_at: string
-          id: string
-          is_group: boolean | null
-          name: string | null
-          project_id: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_group?: boolean | null
-          name?: string | null
-          project_id: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_group?: boolean | null
-          name?: string | null
-          project_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "conversations_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       database_config: {
         Row: {
-          config: Json | null
+          config: Json
           created_at: string
           id: string
-          is_active: boolean | null
+          is_active: boolean
           provider: string
           updated_at: string
         }
         Insert: {
-          config?: Json | null
+          config?: Json
           created_at?: string
           id?: string
-          is_active?: boolean | null
-          provider: string
+          is_active?: boolean
+          provider?: string
           updated_at?: string
         }
         Update: {
-          config?: Json | null
+          config?: Json
           created_at?: string
           id?: string
-          is_active?: boolean | null
+          is_active?: boolean
           provider?: string
           updated_at?: string
         }
@@ -165,177 +82,82 @@ export type Database = {
       }
       editors: {
         Row: {
-          created_at: string
+          created_at: string | null
           email: string
-          employment_type: Database["public"]["Enums"]["employment_type"] | null
-          experience_years: number | null
+          employment_type: Database["public"]["Enums"]["employment_type"]
+          full_name: string
           hourly_rate: number | null
           id: string
-          name: string
-          phone: string | null
-          skills: string[] | null
-          updated_at: string
+          monthly_salary: number | null
+          specialty: string | null
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           email: string
-          employment_type?:
-            | Database["public"]["Enums"]["employment_type"]
-            | null
-          experience_years?: number | null
+          employment_type?: Database["public"]["Enums"]["employment_type"]
+          full_name: string
           hourly_rate?: number | null
           id?: string
-          name: string
-          phone?: string | null
-          skills?: string[] | null
-          updated_at?: string
+          monthly_salary?: number | null
+          specialty?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           email?: string
-          employment_type?:
-            | Database["public"]["Enums"]["employment_type"]
-            | null
-          experience_years?: number | null
+          employment_type?: Database["public"]["Enums"]["employment_type"]
+          full_name?: string
           hourly_rate?: number | null
           id?: string
-          name?: string
-          phone?: string | null
-          skills?: string[] | null
-          updated_at?: string
+          monthly_salary?: number | null
+          specialty?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "editors_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      message_read_status: {
-        Row: {
-          id: string
-          message_id: string
-          read_at: string
-          user_id: string
-        }
-        Insert: {
-          id?: string
-          message_id: string
-          read_at?: string
-          user_id: string
-        }
-        Update: {
-          id?: string
-          message_id?: string
-          read_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "message_read_status_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "message_read_status_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       messages: {
         Row: {
           content: string
-          conversation_id: string
           created_at: string
           id: string
-          is_system: boolean | null
-          message_type: string | null
+          is_read: boolean
+          project_id: string | null
+          recipient_id: string | null
           sender_id: string
-          status: string | null
         }
         Insert: {
           content: string
-          conversation_id: string
           created_at?: string
           id?: string
-          is_system?: boolean | null
-          message_type?: string | null
+          is_read?: boolean
+          project_id?: string | null
+          recipient_id?: string | null
           sender_id: string
-          status?: string | null
         }
         Update: {
           content?: string
-          conversation_id?: string
           created_at?: string
           id?: string
-          is_system?: boolean | null
-          message_type?: string | null
+          is_read?: boolean
+          project_id?: string | null
+          recipient_id?: string | null
           sender_id?: string
-          status?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "messages_conversation_id_fkey"
-            columns: ["conversation_id"]
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
             isOneToOne: false
-            referencedRelation: "conversations"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "messages_sender_id_fkey"
             columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      notifications: {
-        Row: {
-          created_at: string
-          id: string
-          is_read: boolean | null
-          link: string | null
-          message: string
-          title: string
-          type: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_read?: boolean | null
-          link?: string | null
-          message: string
-          title: string
-          type: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_read?: boolean | null
-          link?: string | null
-          message?: string
-          title?: string
-          type?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -348,13 +170,13 @@ export type Database = {
           created_at: string
           due_date: string | null
           id: string
-          notes: string | null
+          invoice_url: string | null
           paid_date: string | null
-          payee_id: string | null
           payer_id: string
-          payment_type: Database["public"]["Enums"]["payment_type"] | null
+          payment_type: Database["public"]["Enums"]["payment_type"]
           project_id: string | null
-          status: Database["public"]["Enums"]["payment_status"] | null
+          recipient_id: string
+          status: Database["public"]["Enums"]["payment_status"]
           updated_at: string
         }
         Insert: {
@@ -362,13 +184,13 @@ export type Database = {
           created_at?: string
           due_date?: string | null
           id?: string
-          notes?: string | null
+          invoice_url?: string | null
           paid_date?: string | null
-          payee_id?: string | null
           payer_id: string
-          payment_type?: Database["public"]["Enums"]["payment_type"] | null
+          payment_type: Database["public"]["Enums"]["payment_type"]
           project_id?: string | null
-          status?: Database["public"]["Enums"]["payment_status"] | null
+          recipient_id: string
+          status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
         }
         Update: {
@@ -376,23 +198,16 @@ export type Database = {
           created_at?: string
           due_date?: string | null
           id?: string
-          notes?: string | null
+          invoice_url?: string | null
           paid_date?: string | null
-          payee_id?: string | null
           payer_id?: string
-          payment_type?: Database["public"]["Enums"]["payment_type"] | null
+          payment_type?: Database["public"]["Enums"]["payment_type"]
           project_id?: string | null
-          status?: Database["public"]["Enums"]["payment_status"] | null
+          recipient_id?: string
+          status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "payments_payee_id_fkey"
-            columns: ["payee_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "payments_payer_id_fkey"
             columns: ["payer_id"]
@@ -401,56 +216,53 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "payments_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "payments_recipient_id_fkey"
+            columns: ["recipient_id"]
             isOneToOne: false
-            referencedRelation: "projects"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
           email: string
           full_name: string | null
           id: string
-          is_trial_used: boolean | null
+          subscription_active: boolean
           subscription_start_date: string | null
-          subscription_tier:
-            | Database["public"]["Enums"]["subscription_tier"]
-            | null
+          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
           trial_end_date: string | null
           updated_at: string
-          user_category: Database["public"]["Enums"]["user_category"] | null
+          user_category: Database["public"]["Enums"]["user_category"]
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
           email: string
           full_name?: string | null
           id: string
-          is_trial_used?: boolean | null
+          subscription_active?: boolean
           subscription_start_date?: string | null
-          subscription_tier?:
-            | Database["public"]["Enums"]["subscription_tier"]
-            | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
           trial_end_date?: string | null
           updated_at?: string
-          user_category?: Database["public"]["Enums"]["user_category"] | null
+          user_category?: Database["public"]["Enums"]["user_category"]
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
           email?: string
           full_name?: string | null
           id?: string
-          is_trial_used?: boolean | null
+          subscription_active?: boolean
           subscription_start_date?: string | null
-          subscription_tier?:
-            | Database["public"]["Enums"]["subscription_tier"]
-            | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
           trial_end_date?: string | null
           updated_at?: string
-          user_category?: Database["public"]["Enums"]["user_category"] | null
+          user_category?: Database["public"]["Enums"]["user_category"]
         }
         Relationships: []
       }
@@ -478,76 +290,90 @@ export type Database = {
             foreignKeyName: "project_clients_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "project_clients_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
+      project_types: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           assigned_date: string | null
-          created_at: string
+          client_id: string | null
+          created_at: string | null
           creator_id: string
-          current_version: number | null
           deadline: string | null
           description: string | null
           editor_id: string | null
+          fee: number | null
           id: string
-          notes: string | null
-          priority: string | null
+          is_subproject: boolean | null
+          name: string
+          parent_project_id: string | null
           project_type: string | null
+          raw_footage_link: string | null
           status: string | null
-          title: string
-          updated_at: string
-          video_duration: number | null
+          updated_at: string | null
         }
         Insert: {
           assigned_date?: string | null
-          created_at?: string
+          client_id?: string | null
+          created_at?: string | null
           creator_id: string
-          current_version?: number | null
           deadline?: string | null
           description?: string | null
           editor_id?: string | null
+          fee?: number | null
           id?: string
-          notes?: string | null
-          priority?: string | null
+          is_subproject?: boolean | null
+          name: string
+          parent_project_id?: string | null
           project_type?: string | null
+          raw_footage_link?: string | null
           status?: string | null
-          title: string
-          updated_at?: string
-          video_duration?: number | null
+          updated_at?: string | null
         }
         Update: {
           assigned_date?: string | null
-          created_at?: string
+          client_id?: string | null
+          created_at?: string | null
           creator_id?: string
-          current_version?: number | null
           deadline?: string | null
           description?: string | null
           editor_id?: string | null
+          fee?: number | null
           id?: string
-          notes?: string | null
-          priority?: string | null
+          is_subproject?: boolean | null
+          name?: string
+          parent_project_id?: string | null
           project_type?: string | null
+          raw_footage_link?: string | null
           status?: string | null
-          title?: string
-          updated_at?: string
-          video_duration?: number | null
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "projects_creator_id_fkey"
-            columns: ["creator_id"]
+            foreignKeyName: "projects_client_id_fkey"
+            columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
           {
@@ -555,6 +381,13 @@ export type Database = {
             columns: ["editor_id"]
             isOneToOne: false
             referencedRelation: "editors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_parent_project_id_fkey"
+            columns: ["parent_project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -578,62 +411,51 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_roles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       video_versions: {
         Row: {
+          correction_notes: string | null
           created_at: string
-          duration: number | null
-          file_size: number | null
+          final_url: string | null
           id: string
-          notes: string | null
+          is_approved: boolean
+          preview_url: string | null
           project_id: string
-          status: string | null
-          thumbnail_url: string | null
           updated_at: string
+          uploaded_by: string
           version_number: number
-          video_url: string
         }
         Insert: {
+          correction_notes?: string | null
           created_at?: string
-          duration?: number | null
-          file_size?: number | null
+          final_url?: string | null
           id?: string
-          notes?: string | null
+          is_approved?: boolean
+          preview_url?: string | null
           project_id: string
-          status?: string | null
-          thumbnail_url?: string | null
           updated_at?: string
+          uploaded_by: string
           version_number: number
-          video_url: string
         }
         Update: {
+          correction_notes?: string | null
           created_at?: string
-          duration?: number | null
-          file_size?: number | null
+          final_url?: string | null
           id?: string
-          notes?: string | null
+          is_approved?: boolean
+          preview_url?: string | null
           project_id?: string
-          status?: string | null
-          thumbnail_url?: string | null
           updated_at?: string
+          uploaded_by?: string
           version_number?: number
-          video_url?: string
         }
         Relationships: [
           {
-            foreignKeyName: "video_versions_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "video_versions_uploaded_by_fkey"
+            columns: ["uploaded_by"]
             isOneToOne: false
-            referencedRelation: "projects"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -643,6 +465,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -652,12 +478,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "editor" | "client" | "creator"
-      employment_type: "full_time" | "part_time" | "freelance" | "contract"
-      payment_status: "pending" | "completed" | "failed" | "refunded"
-      payment_type: "subscription" | "one_time" | "recurring"
-      subscription_tier: "free" | "basic" | "pro" | "enterprise"
-      user_category: "creator" | "editor" | "client"
+      app_role: "editor" | "client" | "agency"
+      employment_type: "fulltime" | "freelance"
+      payment_status: "pending" | "paid" | "overdue"
+      payment_type: "freelance" | "fulltime"
+      project_status: "draft" | "in_review" | "approved" | "completed"
+      subscription_tier: "basic" | "pro" | "premium"
+      user_category: "editor" | "client" | "agency"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -785,12 +612,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "editor", "client", "creator"],
-      employment_type: ["full_time", "part_time", "freelance", "contract"],
-      payment_status: ["pending", "completed", "failed", "refunded"],
-      payment_type: ["subscription", "one_time", "recurring"],
-      subscription_tier: ["free", "basic", "pro", "enterprise"],
-      user_category: ["creator", "editor", "client"],
+      app_role: ["editor", "client", "agency"],
+      employment_type: ["fulltime", "freelance"],
+      payment_status: ["pending", "paid", "overdue"],
+      payment_type: ["freelance", "fulltime"],
+      project_status: ["draft", "in_review", "approved", "completed"],
+      subscription_tier: ["basic", "pro", "premium"],
+      user_category: ["editor", "client", "agency"],
     },
   },
 } as const
