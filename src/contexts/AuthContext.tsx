@@ -1,20 +1,21 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { apiClient } from '@/lib/api-client';
+import { supabase } from '@/integrations/supabase/client';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface User {
   id: string;
   email: string;
-  full_name: string;
-  user_category: 'editor' | 'client' | 'agency';
-  created_at: string;
+  full_name?: string;
+  user_category?: 'editor' | 'client' | 'agency';
+  created_at?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<{ user: any; token: string }>;
-  signup: (email: string, password: string, metadata?: any) => Promise<{ user: any; token: string }>;
+  login: (email: string, password: string) => Promise<{ user: any }>;
+  signup: (email: string, password: string, metadata?: any) => Promise<{ user: any }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -36,24 +37,41 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [authToken, setAuthTokenState] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const isAuthenticated = !!user && !!authToken && apiClient.isAuthenticated();
+  const isAuthenticated = !!user;
 
   const login = async (email: string, password: string) => {
     try {
-      console.log('🔧 AuthContext: Starting login process');
-      const result = await apiClient.login(email, password);
+      console.log('🔧 AuthContext: Starting login with Supabase');
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       
-      console.log('🔧 AuthContext: Login successful, setting user and token');
-      setUser(result.user);
-      setAuthTokenState(result.token);
+      if (error) throw error;
       
-      // Ensure API client has the token
-      apiClient.setAuthToken(result.token);
+      if (data.user) {
+        // Get profile data
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+        
+        const userData: User = {
+          id: data.user.id,
+          email: data.user.email!,
+          full_name: profile?.full_name,
+          user_category: profile?.user_category,
+          created_at: data.user.created_at,
+        };
+        
+        setUser(userData);
+        console.log('🔧 AuthContext: Login successful');
+        return { user: userData };
+      }
       
-      return result;
+      throw new Error('Login failed');
     } catch (error) {
       console.error('🔧 AuthContext: Login failed:', error);
       throw error;
@@ -62,17 +80,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signup = async (email: string, password: string, metadata?: any) => {
     try {
-      console.log('🔧 AuthContext: Starting signup process');
-      const result = await apiClient.signup(email, password, metadata);
+      console.log('🔧 AuthContext: Starting signup with Supabase');
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata,
+          emailRedirectTo: `${window.location.origin}/`,
+        },
+      });
       
-      console.log('🔧 AuthContext: Signup successful, setting user and token');
-      setUser(result.user);
-      setAuthTokenState(result.token);
+      if (error) throw error;
       
-      // Ensure API client has the token
-      apiClient.setAuthToken(result.token);
+      if (data.user) {
+        const userData: User = {
+          id: data.user.id,
+          email: data.user.email!,
+          full_name: metadata?.full_name,
+          user_category: metadata?.user_category,
+          created_at: data.user.created_at,
+        };
+        
+        setUser(userData);
+        console.log('🔧 AuthContext: Signup successful');
+        return { user: userData };
+      }
       
-      return result;
+      throw new Error('Signup failed');
     } catch (error) {
       console.error('🔧 AuthContext: Signup failed:', error);
       throw error;
@@ -81,50 +115,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      console.log('🔧 AuthContext: Starting logout process');
-      await apiClient.logout();
+      console.log('🔧 AuthContext: Starting logout');
+      await supabase.auth.signOut();
     } catch (error) {
-      console.error('🔧 AuthContext: Logout API call failed:', error);
+      console.error('🔧 AuthContext: Logout failed:', error);
     } finally {
-      console.log('🔧 AuthContext: Clearing local auth state');
       setUser(null);
-      setAuthTokenState(null);
-      apiClient.clearAuthToken();
     }
   };
 
   const refreshUser = async () => {
-    if (isRefreshing) {
-      console.log('🔧 AuthContext: Already refreshing user, skipping');
-      return;
-    }
-    
-    setIsRefreshing(true);
-    
     try {
-      console.log('🔧 AuthContext: Refreshing user data');
+      const { data: { user: authUser } } = await supabase.auth.getUser();
       
-      if (apiClient.isAuthenticated()) {
-        const userData = await apiClient.getCurrentUser();
-        console.log('🔧 AuthContext: User data refreshed successfully');
+      if (authUser) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', authUser.id)
+          .single();
+        
+        const userData: User = {
+          id: authUser.id,
+          email: authUser.email!,
+          full_name: profile?.full_name,
+          user_category: profile?.user_category,
+          created_at: authUser.created_at,
+        };
+        
         setUser(userData);
-        setAuthTokenState(apiClient.getAuthToken());
       } else {
-        console.log('🔧 AuthContext: No valid authentication, clearing user');
         setUser(null);
-        setAuthTokenState(null);
       }
     } catch (error) {
       console.error('🔧 AuthContext: Failed to refresh user:', error);
       setUser(null);
-      setAuthTokenState(null);
-      
-      // If it's an auth error, clear the token
-      if (error instanceof Error && error.message.includes('Unauthorized')) {
-        apiClient.clearAuthToken();
-      }
-    } finally {
-      setIsRefreshing(false);
     }
   };
 
@@ -132,47 +157,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     let mounted = true;
     
     const initializeAuth = async () => {
-      console.log('🔧 AuthContext: Initializing authentication');
+      console.log('🔧 AuthContext: Initializing Supabase authentication');
       setIsLoading(true);
       
       try {
-        // Wait a bit for API client to initialize
-        await new Promise(resolve => setTimeout(resolve, 100));
+        const { data: { session } } = await supabase.auth.getSession();
         
-        // Check if API client already has a valid token
-        if (apiClient.isAuthenticated()) {
-          console.log('🔧 AuthContext: API client already authenticated, setting state...');
-          const storedToken = apiClient.getAuthToken();
-          setAuthTokenState(storedToken);
+        if (session?.user && mounted) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
           
-          // Try to get user data, but don't fail if it doesn't work
-          try {
-            console.log('🔧 AuthContext: Attempting to get user data');
-            const userData = await apiClient.getCurrentUser();
-            if (mounted) {
-              console.log('🔧 AuthContext: User data retrieved successfully');
-              setUser(userData);
-            }
-          } catch (error) {
-            console.log('🔧 AuthContext: Could not get user data, but keeping token:', error);
-            // Keep the token but set user to null - they can re-login if needed
-            if (mounted) {
-              setUser(null);
-            }
-          }
-        } else {
-          console.log('🔧 AuthContext: No valid authentication found');
-          if (mounted) {
-            setUser(null);
-            setAuthTokenState(null);
-          }
+          const userData: User = {
+            id: session.user.id,
+            email: session.user.email!,
+            full_name: profile?.full_name,
+            user_category: profile?.user_category,
+            created_at: session.user.created_at,
+          };
+          
+          setUser(userData);
+          console.log('🔧 AuthContext: User session restored');
+        } else if (mounted) {
+          setUser(null);
         }
       } catch (error) {
         console.error('🔧 AuthContext: Auth initialization failed:', error);
         if (mounted) {
           setUser(null);
-          setAuthTokenState(null);
-          apiClient.clearAuthToken();
         }
       } finally {
         if (mounted) {
@@ -183,36 +197,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     initializeAuth();
 
-    // Listen for auth expiration events with debouncing
-    let authExpiredTimeout: NodeJS.Timeout;
-    const handleAuthExpired = () => {
-      console.log('🔧 AuthContext: Auth expired event received');
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔧 AuthContext: Auth state changed:', event);
       
-      // Only clear auth if we're not already authenticated with a valid token
-      if (!apiClient.isAuthenticated()) {
-        // Debounce multiple auth expired events
-        clearTimeout(authExpiredTimeout);
-        authExpiredTimeout = setTimeout(() => {
-          if (mounted) {
-            console.log('🔧 AuthContext: Clearing auth state due to expiration');
-            setUser(null);
-            setAuthTokenState(null);
-          }
-        }, 100);
-      } else {
-        console.log('🔧 AuthContext: Auth expired event received but token is still valid, ignoring');
+      if (session?.user && mounted) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        const userData: User = {
+          id: session.user.id,
+          email: session.user.email!,
+          full_name: profile?.full_name,
+          user_category: profile?.user_category,
+          created_at: session.user.created_at,
+        };
+        
+        setUser(userData);
+      } else if (mounted) {
+        setUser(null);
       }
-    };
-
-    // Register callback with API client for token expiration
-    apiClient.onTokenExpired(handleAuthExpired);
-    window.addEventListener('auth-expired', handleAuthExpired);
+    });
 
     return () => {
       mounted = false;
-      clearTimeout(authExpiredTimeout);
-      apiClient.removeTokenExpiredCallback(handleAuthExpired);
-      window.removeEventListener('auth-expired', handleAuthExpired);
+      subscription.unsubscribe();
     };
   }, []);
 
