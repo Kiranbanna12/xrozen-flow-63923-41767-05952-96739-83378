@@ -40,6 +40,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const isAuthenticated = !!user;
 
+  // Check if supabase client is available
+  if (!supabase) {
+    console.error('🔧 AuthContext: Supabase client not available');
+    return (
+      <AuthContext.Provider value={{
+        user: null,
+        isLoading: false,
+        isAuthenticated: false,
+        login: async () => { throw new Error('Supabase not configured'); },
+        signup: async () => { throw new Error('Supabase not configured'); },
+        logout: async () => { throw new Error('Supabase not configured'); },
+        refreshUser: async () => { throw new Error('Supabase not configured'); },
+      }}>
+        {children}
+      </AuthContext.Provider>
+    );
+  }
+
   const login = async (email: string, password: string) => {
     try {
       console.log('🔧 AuthContext: Starting login with Supabase');
