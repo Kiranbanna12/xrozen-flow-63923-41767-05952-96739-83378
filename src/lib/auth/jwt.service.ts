@@ -19,8 +19,28 @@ export interface TokenPair {
 }
 
 export class JWTService {
-  private static readonly ACCESS_TOKEN_SECRET = process.env.JWT_ACCESS_SECRET || 'xrozen-access-secret-change-in-production';
-  private static readonly REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET || 'xrozen-refresh-secret-change-in-production';
+  private static readonly ACCESS_TOKEN_SECRET = (() => {
+    const secret = process.env.JWT_ACCESS_SECRET;
+    if (!secret || secret.includes('change-in-production') || secret.length < 32) {
+      throw new Error(
+        'SECURITY ERROR: JWT_ACCESS_SECRET must be set to a strong secret (minimum 32 characters). ' +
+        'Generate one with: openssl rand -base64 32'
+      );
+    }
+    return secret;
+  })();
+  
+  private static readonly REFRESH_TOKEN_SECRET = (() => {
+    const secret = process.env.JWT_REFRESH_SECRET;
+    if (!secret || secret.includes('change-in-production') || secret.length < 32) {
+      throw new Error(
+        'SECURITY ERROR: JWT_REFRESH_SECRET must be set to a strong secret (minimum 32 characters). ' +
+        'Generate one with: openssl rand -base64 32'
+      );
+    }
+    return secret;
+  })();
+  
   private static readonly ACCESS_TOKEN_EXPIRY = '24h'; // 24 hours
   private static readonly REFRESH_TOKEN_EXPIRY = '7d'; // 7 days
 

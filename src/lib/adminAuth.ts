@@ -1,21 +1,43 @@
 /**
  * Admin authentication and authorization utilities
- * Manages admin access control using local admin.json file
+ * Uses database-backed role verification for security
  */
 
-import adminsData from '@/data/admins.json';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Check if an email is in the admin list
+ * Check if a user has admin role (database-backed)
+ * SECURITY: This should only be used for UI hints. 
+ * All critical admin checks MUST be done server-side.
  */
-export function isAdminEmail(email: string | undefined | null): boolean {
-  if (!email) return false;
-  return adminsData.admins.includes(email.toLowerCase());
+export async function isAdminUser(userId: string | undefined | null): Promise<boolean> {
+  if (!userId) return false;
+  
+  try {
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .maybeSingle();
+    
+    if (error) {
+      console.error('Error checking admin role:', error);
+      return false;
+    }
+    
+    return !!data;
+  } catch (error) {
+    console.error('Error checking admin role:', error);
+    return false;
+  }
 }
 
 /**
- * Get list of all admin emails
+ * DEPRECATED: Do not use email-based checks
+ * Use isAdminUser() instead with user ID
  */
-export function getAdminEmails(): string[] {
-  return [...adminsData.admins];
+export function isAdminEmail(email: string | undefined | null): boolean {
+  console.warn('⚠️ isAdminEmail is deprecated and insecure. Use isAdminUser() instead.');
+  return false;
 }

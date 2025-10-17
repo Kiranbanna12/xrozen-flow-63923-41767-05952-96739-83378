@@ -10,7 +10,17 @@ export class JWTService {
   private readonly expiresIn: string;
 
   constructor() {
-    this.secret = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+    const secret = process.env.JWT_SECRET;
+    
+    // SECURITY: Fail fast if JWT_SECRET is not properly configured
+    if (!secret || secret.includes('change-in-production') || secret.length < 32) {
+      throw new Error(
+        'SECURITY ERROR: JWT_SECRET must be set to a strong secret (minimum 32 characters). ' +
+        'Generate one with: openssl rand -base64 32'
+      );
+    }
+    
+    this.secret = secret;
     this.expiresIn = process.env.JWT_EXPIRES_IN || '7d';
   }
 
