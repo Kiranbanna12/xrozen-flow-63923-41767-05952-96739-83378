@@ -16,7 +16,7 @@ export interface DatabaseConfig {
 }
 
 class DatabaseSwitcherService {
-  private currentProvider: DatabaseProvider = 'sqlite';
+  private currentProvider: DatabaseProvider = 'supabase';
   
   async getCurrentProvider(): Promise<DatabaseProvider> {
     try {
